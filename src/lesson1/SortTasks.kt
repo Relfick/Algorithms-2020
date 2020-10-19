@@ -2,6 +2,9 @@
 
 package lesson1
 
+import java.io.File
+import java.lang.Integer.min
+
 /**
  * Сортировка времён
  *
@@ -32,8 +35,27 @@ package lesson1
  *
  * В случае обнаружения неверного формата файла бросить любое исключение.
  */
+
+// Время - O(N*log(N))
+// Память - O(N)
 fun sortTimes(inputName: String, outputName: String) {
-    TODO()
+    fun parseTime(s: String): Int {
+        val splitted = s.split(":", " ")
+        return 3600 * (splitted[0].toInt() % 12) + 60 * splitted[1].toInt() +
+                +splitted[2].toInt() + if (splitted[3] == "PM") 43200 else 0
+    }
+
+    val times = mutableMapOf<Int, MutableList<String>>()
+    for (line in File(inputName).readLines()) {
+        require(line.matches(Regex("(0|1)\\d:[0-5]\\d:[0-5]\\d (P|A)M")))
+        val intTime = parseTime(line)
+        if (times.containsKey(intTime)) times[intTime]!!.add(line)
+        else times[intTime] = mutableListOf(line)
+    }
+
+    File(outputName).bufferedWriter().use { writer ->
+        times.toSortedMap().forEach { it.value.forEach { time -> writer.write("${time}\n") } }
+    }
 }
 
 /**
@@ -63,7 +85,43 @@ fun sortTimes(inputName: String, outputName: String) {
  * В случае обнаружения неверного формата файла бросить любое исключение.
  */
 fun sortAddresses(inputName: String, outputName: String) {
-    TODO()
+    fun parseNote(note: String): Triple<String, Int, String> {
+        val (name, address) = note.split(" - ")
+        val (street, number) = address.split(" ")
+        return Triple(street, number.toInt(), name)
+    }
+
+    var notes = mutableMapOf<String, MutableMap<Int, MutableList<String>>>()
+    for (line in File(inputName).readLines()) {
+        require(line.matches(Regex("[a-zA-Zа-яА-Я-ёЁ]+ [a-zA-Zа-яА-Я-ёЁ]+ - [a-zA-Zа-яА-Я-ёЁ]+ \\d+")))
+        val (street, number, name) = parseNote(line)
+        if (notes.containsKey(street)) {
+            if (notes[street]!!.containsKey(number))
+                notes[street]!![number]!!.add(name)
+            else
+                notes[street]!![number] = mutableListOf(name)
+        } else {
+            notes[street] = mutableMapOf(Pair(number, mutableListOf(name)))
+        }
+    }
+
+    notes = notes.toSortedMap()
+    for (i in notes.keys) {
+        notes[i] = notes[i]!!.toSortedMap()
+        for (j in notes[i]!!.keys) {
+            notes[i]!![j]!!.sort()
+        }
+    }
+
+    File(outputName).bufferedWriter().use { writer ->
+        notes.forEach { (street, numberAndNames) ->
+            numberAndNames.forEach { numberAndName ->
+                writer.write(
+                    "$street ${numberAndName.key} - ${numberAndName.value.joinToString(separator = ", ")}\n"
+                )
+            }
+        }
+    }
 }
 
 /**
@@ -96,8 +154,19 @@ fun sortAddresses(inputName: String, outputName: String) {
  * 99.5
  * 121.3
  */
+
+// Время - O(N)
+// Память - O(N)
 fun sortTemperatures(inputName: String, outputName: String) {
-    TODO()
+    var temperatures = mutableListOf<Int>()
+    for (line in File(inputName).readLines()) {
+        temperatures.add((line.toDouble() * 10 + 2730).toInt())
+    }
+    temperatures = countingSort(temperatures.toIntArray(), 7730).toMutableList()
+
+    File(outputName).bufferedWriter().use { writer ->
+        temperatures.forEach { writer.write("${(it - 2730) / 10.0}\n") }
+    }
 }
 
 /**
