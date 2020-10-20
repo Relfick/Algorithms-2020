@@ -84,6 +84,8 @@ fun sortTimes(inputName: String, outputName: String) {
  *
  * В случае обнаружения неверного формата файла бросить любое исключение.
  */
+//Трудоемкость - O(N*log(N))
+//Ресурсоемкость - O(N)
 fun sortAddresses(inputName: String, outputName: String) {
     fun parseNote(note: String): Triple<String, Int, String> {
         val (name, address) = note.split(" - ")
