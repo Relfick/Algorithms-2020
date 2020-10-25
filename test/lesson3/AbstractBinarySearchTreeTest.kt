@@ -162,6 +162,10 @@ abstract class AbstractBinarySearchTreeTest {
             }
             println("All clear!")
         }
+        val myTree = KtBinarySearchTree<Int>()
+        myTree.addAll(listOf(4, 5, 6, 8, 9, 10, 12))
+        myTree.removeAll(listOf(10, 15))
+        assertEquals(6, myTree.size)
     }
 
     protected fun doIteratorTest() {

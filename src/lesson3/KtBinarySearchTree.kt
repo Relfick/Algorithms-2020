@@ -79,8 +79,40 @@ class KtBinarySearchTree<T : Comparable<T>> : AbstractMutableSet<T>(), Checkable
      *
      * Средняя
      */
+    // Трудоемкость в худшем случае O(N), в среднем O(log(N))
+    // Ресурсоемкость O(1)
     override fun remove(element: T): Boolean {
-        TODO()
+        val node = find(element)
+        return if (node == null || element.compareTo(node.value) != 0) false
+        else {
+            root = remove(root, element)
+            size--
+            true
+        }
+    }
+
+    private fun remove(node: Node<T>?, element: T): Node<T>? {
+        if (node == null) return node
+        var tempNode = node
+        if (element < node.value) node.left = remove(node.left, element)
+        else if (element > node.value) node.right = remove(node.right, element)
+        else if (node.left != null && node.right != null) {
+            val min = Node(findMin(node.right!!)!!.value)
+            min.right = tempNode.right
+            min.left = tempNode.left
+            tempNode = min
+            tempNode.right = remove(tempNode.right, tempNode.value)
+        } else tempNode = when {
+            tempNode.left != null -> tempNode.left
+            tempNode.right != null -> tempNode.right
+            else -> null
+        }
+        return tempNode
+    }
+
+    private fun findMin(node: Node<T>): Node<T>? {
+        while (node.left != null) return findMin(node.left!!)
+        return node
     }
 
     override fun comparator(): Comparator<in T>? =
