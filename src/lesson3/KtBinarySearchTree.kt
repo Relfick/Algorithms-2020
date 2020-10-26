@@ -1,6 +1,7 @@
 package lesson3
 
 import java.util.*
+import kotlin.NoSuchElementException
 import kotlin.math.max
 
 // attention: Comparable is supported but Comparator is not
@@ -123,6 +124,22 @@ class KtBinarySearchTree<T : Comparable<T>> : AbstractMutableSet<T>(), Checkable
 
     inner class BinarySearchTreeIterator internal constructor() : MutableIterator<T> {
 
+        private var current: Node<T>? = null
+        private val stack: Stack<Node<T>> = Stack()
+
+        // Трудоемкость O(N)
+        // Ресурсоемкость O(N)
+        init {
+            root?.let { pushToStack(it) }
+        }
+
+        private fun pushToStack(node: Node<T>) {
+            node.right?.let { pushToStack(it) }
+            stack.push(node)
+            node.left?.let { pushToStack(it) }
+        }
+
+
         /**
          * Проверка наличия следующего элемента
          *
@@ -133,10 +150,8 @@ class KtBinarySearchTree<T : Comparable<T>> : AbstractMutableSet<T>(), Checkable
          *
          * Средняя
          */
-        override fun hasNext(): Boolean {
-            // TODO
-            throw NotImplementedError()
-        }
+        // Трудоемкость O(1)
+        override fun hasNext(): Boolean = stack.isNotEmpty()
 
         /**
          * Получение следующего элемента
@@ -151,9 +166,11 @@ class KtBinarySearchTree<T : Comparable<T>> : AbstractMutableSet<T>(), Checkable
          *
          * Средняя
          */
+        // Трудоемкость O(1)
         override fun next(): T {
-            // TODO
-            throw NotImplementedError()
+            if (stack.isEmpty()) throw NoSuchElementException()
+            current = stack.pop()
+            return current!!.value
         }
 
         /**
@@ -168,11 +185,12 @@ class KtBinarySearchTree<T : Comparable<T>> : AbstractMutableSet<T>(), Checkable
          *
          * Сложная
          */
+        // Трудоемкость в худшем случае O(N), в среднем O(log(N))
         override fun remove() {
-            // TODO
-            throw NotImplementedError()
+            if (current == null) throw IllegalStateException()
+            remove(current!!.value)
+            current = null
         }
-
     }
 
     /**
