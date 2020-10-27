@@ -201,7 +201,7 @@ class KtBinarySearchTree<T : Comparable<T>> : AbstractMutableSet<T>(), Checkable
      * При равенстве fromElement и toElement возвращается пустое множество.
      * Изменения в дереве должны отображаться в полученном подмножестве, и наоборот.
      *
-     * При попытке добавить в подмножество элемент за пределами указанного диапазона
+     * При попытке доба вить в подмножество элемент за пределами указанного диапазона
      * должен быть брошен IllegalArgumentException.
      *
      * Спецификация: [java.util.SortedSet.subSet] (Ctrl+Click по subSet)

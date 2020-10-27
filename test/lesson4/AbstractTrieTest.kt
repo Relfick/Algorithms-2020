@@ -109,6 +109,13 @@ abstract class AbstractTrieTest {
             }
             println("All clear!")
         }
+        val myTrie = KtTrie()
+        myTrie.add("vesna")
+        myTrie.add("ves")
+        myTrie.remove("ves")
+        assertFalse {
+            myTrie.iterator().next() == "ves"
+        }
     }
 
     protected fun doIteratorRemoveTest() {
@@ -169,6 +176,16 @@ abstract class AbstractTrieTest {
                 )
             }
             println("All clear!")
+        }
+        val myTrie = KtTrie()
+        myTrie.add("vesna")
+        myTrie.add("ves")
+        assertFailsWith<IllegalStateException> {
+            myTrie.iterator().let {
+                it.next()
+                it.remove()
+                it.remove()
+            }
         }
     }
 
