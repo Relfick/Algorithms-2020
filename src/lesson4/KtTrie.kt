@@ -1,5 +1,7 @@
 package lesson4
 
+import java.util.*
+
 /**
  * Префиксное дерево для строк
  */
@@ -68,8 +70,43 @@ class KtTrie : AbstractMutableSet<String>(), MutableSet<String> {
      *
      * Сложная
      */
-    override fun iterator(): MutableIterator<String> {
-        TODO()
-    }
+    override fun iterator(): MutableIterator<String> = TrieIterator()
 
+
+    inner class TrieIterator internal constructor() : MutableIterator<String> {
+        private val stack = Stack<String>()
+        private var current: String? = null
+
+        init {
+            if (root.children.isNotEmpty()) {
+                findWords("", root)
+            }
+        }
+
+        // Трудоемкость O(N)
+        // Ресурсоемкость O(M)
+        // N - суммарное количество букв в дереве, M - сумма букв во всех словах
+        private fun findWords(word: String, currentNode: Node) {
+            if (currentNode.children.containsKey(0.toChar()))
+                stack.push(word)
+
+            currentNode.children.forEach { if (it.key != 0.toChar()) findWords(word + it.key, it.value) }
+        }
+
+        // Трудоемкость O(1)
+        override fun hasNext(): Boolean = stack.isNotEmpty()
+
+        // Трудоемкость O(1)
+        override fun next(): String {
+            if (stack.isEmpty()) throw IllegalStateException()
+            current = stack.pop()
+            return current!!
+        }
+
+        // Трудоемкость O(N)
+        override fun remove() {
+            if (current == null || !this@KtTrie.remove(current)) throw IllegalStateException()
+            current = null
+        }
+    }
 }
