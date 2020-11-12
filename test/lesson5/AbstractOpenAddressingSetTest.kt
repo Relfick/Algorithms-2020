@@ -116,6 +116,18 @@ abstract class AbstractOpenAddressingSetTest {
             assertFailsWith<IllegalStateException>("Something was supposedly returned after the elements ended") {
                 openAddressingSetIter.next()
             }
+
+            val el1 = 5.6
+            val el2 = 11.8
+            val set3 = KtOpenAddressingSet<Double>(2)
+            set3.add(el1)
+            set3.add(el2)
+            set3.remove(el1)
+            val iterator3 = set3.iterator()
+            assertFalse("next() returned a removed element") {
+                iterator3.next() == el1
+            }
+
             println("All clear!")
         }
     }
@@ -173,6 +185,19 @@ abstract class AbstractOpenAddressingSetTest {
                     "Open addressing set has the element $element that is not in control set."
                 )
             }
+
+            val el1 = 5.6
+            val el2 = 11.8
+            val set4 = KtOpenAddressingSet<Double>(2)
+            set4.add(el1)
+            set4.add(el2)
+            val iterator4 = set4.iterator()
+            iterator4.next()
+            assertFailsWith<IllegalStateException>("iterator.remove() called twice") {
+                iterator4.remove()
+                iterator4.remove()
+            }
+
             println("All clear!")
         }
     }

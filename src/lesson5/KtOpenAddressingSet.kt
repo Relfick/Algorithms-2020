@@ -14,6 +14,8 @@ class KtOpenAddressingSet<T : Any>(private val bits: Int) : AbstractMutableSet<T
 
     override var size: Int = 0
 
+    private object removed
+
     /**
      * Индекс в таблице, начиная с которого следует искать данный элемент
      */
@@ -51,7 +53,7 @@ class KtOpenAddressingSet<T : Any>(private val bits: Int) : AbstractMutableSet<T
         val startingIndex = element.startingIndex()
         var index = startingIndex
         var current = storage[index]
-        while (current != null) {
+        while (current != null && current != removed) {
             if (current == element) {
                 return false
             }
@@ -75,8 +77,25 @@ class KtOpenAddressingSet<T : Any>(private val bits: Int) : AbstractMutableSet<T
      *
      * Средняя
      */
+
+    // Трудоемкость - O(N)
+    // Ресурсоемкость - O(1)
     override fun remove(element: T): Boolean {
-        TODO("not implemented")
+        val startingIndex = element.startingIndex()
+        var index = startingIndex
+        var current = storage[index]
+
+        while (current != null) {
+            if (current == element) {
+                storage[index] = removed
+                size--
+                return true
+            }
+            index = (index + 1) % capacity
+            check(index != startingIndex)
+            current = storage[index]
+        }
+        return false
     }
 
     /**
@@ -89,7 +108,39 @@ class KtOpenAddressingSet<T : Any>(private val bits: Int) : AbstractMutableSet<T
      *
      * Средняя (сложная, если поддержан и remove тоже)
      */
-    override fun iterator(): MutableIterator<T> {
-        TODO("not implemented")
+    override fun iterator(): MutableIterator<T> = Iterator()
+
+    // Ресурсоемкость - O(1)
+    inner class Iterator : MutableIterator<T> {
+        var left = size
+        var index = -1
+        var allowRemove = false
+
+        override fun hasNext(): Boolean = left != 0
+
+        // Трудоемкость O(N)
+        // Ресурсоемкость O(1)
+        override fun next(): T {
+            if (!hasNext()) throw IllegalStateException()
+
+            index++
+            var current = storage[index]
+            while (current == null || current == removed) {
+                index++
+                current = storage[index]
+            }
+            left--
+            allowRemove = true
+            return current as T
+        }
+
+        // Трудоемкость - O(1)
+        override fun remove() {
+            if (!allowRemove) throw IllegalStateException()
+            storage[index] = removed
+            allowRemove = false
+            size--
+        }
+
     }
 }
