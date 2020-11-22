@@ -1,6 +1,7 @@
 package lesson4
 
 import java.util.*
+import kotlin.collections.ArrayDeque
 
 /**
  * Префиксное дерево для строк
@@ -74,7 +75,7 @@ class KtTrie : AbstractMutableSet<String>(), MutableSet<String> {
 
 
     inner class TrieIterator internal constructor() : MutableIterator<String> {
-        private val stack = Stack<String>()
+        private val stack = ArrayDeque<String>()
         private var current: String? = null
 
         init {
@@ -88,7 +89,7 @@ class KtTrie : AbstractMutableSet<String>(), MutableSet<String> {
         // N - суммарное количество букв в дереве, M - сумма букв во всех словах
         private fun findWords(word: String, currentNode: Node) {
             if (currentNode.children.containsKey(0.toChar()))
-                stack.push(word)
+                stack.add(word)
 
             currentNode.children.forEach { if (it.key != 0.toChar()) findWords(word + it.key, it.value) }
         }
@@ -99,7 +100,7 @@ class KtTrie : AbstractMutableSet<String>(), MutableSet<String> {
         // Трудоемкость O(1)
         override fun next(): String {
             if (stack.isEmpty()) throw IllegalStateException()
-            current = stack.pop()
+            current = stack.removeLast()
             return current!!
         }
 

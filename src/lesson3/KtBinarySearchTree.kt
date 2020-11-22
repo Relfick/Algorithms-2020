@@ -2,6 +2,7 @@ package lesson3
 
 import java.util.*
 import kotlin.NoSuchElementException
+import kotlin.collections.ArrayDeque
 import kotlin.math.max
 
 // attention: Comparable is supported but Comparator is not
@@ -125,7 +126,7 @@ class KtBinarySearchTree<T : Comparable<T>> : AbstractMutableSet<T>(), Checkable
     inner class BinarySearchTreeIterator internal constructor() : MutableIterator<T> {
 
         private var current: Node<T>? = null
-        private val stack: Stack<Node<T>> = Stack()
+        private val stack: ArrayDeque<Node<T>> = ArrayDeque()
 
         // Трудоемкость O(N)
         // Ресурсоемкость O(N)
@@ -135,7 +136,7 @@ class KtBinarySearchTree<T : Comparable<T>> : AbstractMutableSet<T>(), Checkable
 
         private fun pushToStack(node: Node<T>) {
             node.right?.let { pushToStack(it) }
-            stack.push(node)
+            stack.add(node)
             node.left?.let { pushToStack(it) }
         }
 
@@ -169,7 +170,7 @@ class KtBinarySearchTree<T : Comparable<T>> : AbstractMutableSet<T>(), Checkable
         // Трудоемкость O(1)
         override fun next(): T {
             if (stack.isEmpty()) throw NoSuchElementException()
-            current = stack.pop()
+            current = stack.removeLast()
             return current!!.value
         }
 

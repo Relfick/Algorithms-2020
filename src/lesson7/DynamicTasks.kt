@@ -16,6 +16,8 @@ import kotlin.math.max
  * Если есть несколько самых длинных общих подпоследовательностей, вернуть любую из них.
  * При сравнении подстрок, регистр символов *имеет* значение.
  */
+//Трудоемкость - O(m*n)
+//Ресурсоемкость - O(m*n), где m и n - длины первой и второй строк соответственно
 fun longestCommonSubSequence(first: String, second: String): String {
     val m = first.length
     val n = second.length
@@ -59,8 +61,38 @@ fun longestCommonSubSequence(first: String, second: String): String {
  * то вернуть ту, в которой числа расположены раньше (приоритет имеют первые числа).
  * В примере ответами являются 2, 8, 9, 12 или 2, 5, 9, 12 -- выбираем первую из них.
  */
+
+// Трудоемкость - O(N^2)
+// Ресурсоемкость - O(N)
 fun longestIncreasingSubSequence(list: List<Int>): List<Int> {
-    TODO()
+    val n = list.size
+    if (n == 0) return list
+    val d = MutableList(n) { 1 }
+    val p = MutableList(n) { -1 }
+
+    for (i in 1 until n)
+        for (j in 0 until i) {
+            if (list[j] < list[i] && d[i] < d[j] + 1) {
+                d[i] = d[j] + 1
+                p[i] = j
+            }
+        }
+
+    var ans = d[0]
+    var pos = 0
+    for (i in 1 until n) {
+        if (d[i] > ans) {
+            ans = d[i]
+            pos = i
+        }
+    }
+
+    val subseq = mutableListOf<Int>()
+    while (pos != -1) {
+        subseq.add(list[pos])
+        pos = p[pos]
+    }
+    return subseq.reversed()
 }
 
 /**
